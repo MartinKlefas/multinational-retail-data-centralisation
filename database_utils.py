@@ -1,4 +1,4 @@
-import yaml, sqlalchemy
+import yaml, sqlalchemy, pandas
 
 
 
@@ -26,3 +26,7 @@ class DatabaseConnector:
                 table_names.append(row[1])
             
             return table_names
+    
+    def read_rds_table(self,engine,table_name):     
+        frame = pandas.read_sql_table(table_name,con=engine.connect())
+        return frame
