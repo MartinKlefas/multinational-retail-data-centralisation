@@ -1,4 +1,5 @@
-import yaml, sqlalchemy, pandas
+import yaml, sqlalchemy
+import pandas as pd
 
 
 
@@ -28,5 +29,17 @@ class DatabaseConnector:
             return table_names
     
     def read_rds_table(self,engine,table_name):     
-        frame = pandas.read_sql_table(table_name,con=engine.connect())
+        frame = pd.read_sql_table(table_name,con=engine.connect())
         return frame
+    
+    def upload_to_db(self,df: pd.DataFrame,table_name: str):
+        dictCredentials = self.read_db_creds()
+
+        connectionString = "postgresql+psycopg2://" + str(dictCredentials["LOCAL_USER"]) + ":" + str(dictCredentials["LOCAL_PASSWORD"])
+        connectionString += "@localhost:" + str(dictCredentials["LOCAL_PORT"]) + "/" + str(dictCredentials["LOCAL_DATABASE"])
+        
+    
+        engine = sqlalchemy.create_engine(connectionString)
+        with engine.connect() as connection:
+            result = connection.execute(sqlalchemy.text("DROP TABLE IF EXISTS "+ table_name))
+            df.to_sql(table_name,connection,if_exists="replace",index=False)
