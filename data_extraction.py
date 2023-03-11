@@ -11,7 +11,7 @@ class DataExtractor:
         joined =pd.concat(tables,ignore_index=True)
         return joined
     
-    def list_number_of_stores(endpoint: str, header: dict):
+    def list_number_of_stores(self,endpoint: str, header: dict):
         
         conn = http.client.HTTPSConnection("aqj7u5id95.execute-api.eu-west-1.amazonaws.com")
         
@@ -26,6 +26,7 @@ class DataExtractor:
         
         conn.close()
         try :
+            #print(data.decode("utf-8"))
             data = json.loads(data.decode("utf-8"))
 
             return(data["number_stores"])

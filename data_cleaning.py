@@ -8,7 +8,7 @@ class DataCleaning:
         df['join_date']=pd.to_datetime(df['join_date'],infer_datetime_format=True, errors='coerce')
         df["country"] = df["country"].astype("category")
         df["country_code"] = df["country_code"].astype("category")
-        df["address"] = df["address"].str.replace('\W', '', regex=True)
+        df["address"] = df["address"].str.replace('\W', ' ', regex=True)
         df.drop_duplicates(subset=["first_name", "last_name", "date_of_birth", "country"],keep="first",inplace=True)
 
         
@@ -43,5 +43,19 @@ class DataCleaning:
         df['gcode'] = df.full_address.apply(geolocator.geocode)
         df['lat'] = [g.latitude for g in df.gcode]
         df['long'] = [g.longitude for g in df.gcode]
+
+        return df
+
+    def clean_store_data(self, df : pd.DataFrame):
+        df = df.drop(columns=["lat","message"])
+        df['index'] = pd.to_numeric(df['index'],errors="coerce")
+        df['longitude']= pd.to_numeric(df['longitude'],errors="coerce")
+        df['latitude'] = pd.to_numeric(df['latitude'],errors="coerce")
+        df.dropna(inplace=True,axis="index",how="any") # drops the whole row if any columns have an nan
+        df['opening_date']=pd.to_datetime(df['opening_date'],infer_datetime_format=True, errors='coerce')
+        df["continent"] = df["continent"].astype("category")
+        df["country_code"] = df["country_code"].astype("category")
+        df["store_type"] = df["store_type"].astype("category")
+        df["address"] = df["address"].str.replace('\W', ' ', regex=True) # remove the special chars from address
 
         return df
