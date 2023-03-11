@@ -1,4 +1,5 @@
 import pandas as pd
+from geopy.geocoders import Nominatim
 
 class DataCleaning:
     def clean_user_data(self, df: pd.DataFrame):
@@ -7,7 +8,7 @@ class DataCleaning:
         df['join_date']=pd.to_datetime(df['join_date'],infer_datetime_format=True, errors='coerce')
         df["country"] = df["country"].astype("category")
         df["country_code"] = df["country_code"].astype("category")
-
+        df["address"] = df["address"].str.replace('\W', '', regex=True)
         df.drop_duplicates(subset=["first_name", "last_name", "date_of_birth", "country"],keep="first",inplace=True)
 
         
@@ -33,5 +34,14 @@ class DataCleaning:
         df['date_payment_confirmed']=pd.to_datetime(df['date_payment_confirmed'],infer_datetime_format=True, errors='coerce') 
         df.drop_duplicates(subset=["card_number",	"expiry_date",	"card_provider"	],keep="first",inplace=True)
         df.dropna(inplace=True,axis="index",how="any") # drops the whole row if any columns have an nan
+
+        return df
+
+    def geoCode(self, df: pd.DataFrame):
+        geolocator = Nominatim(timeout=10, user_agent = "myGeolocator")
+        df['full_address'] = df.address +"," + df.country
+        df['gcode'] = df.full_address.apply(geolocator.geocode)
+        df['lat'] = [g.latitude for g in df.gcode]
+        df['long'] = [g.longitude for g in df.gcode]
 
         return df
