@@ -3,6 +3,7 @@ import numpy as np
 import tabula
 import pandas as pd
 import http.client
+import boto3
 
 
 class DataExtractor:
@@ -78,3 +79,8 @@ class DataExtractor:
 
         return df
 
+    def extract_from_s3(self, link : str):
+        s3 = boto3.client('s3')
+
+        s3.download_file("data-handling-public",'products.csv','products.csv')
+        
