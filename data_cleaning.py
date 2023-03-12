@@ -31,6 +31,8 @@ class DataCleaning:
     def clean_card_data(self, df : pd.DataFrame):
         df["card_provider"] = df["card_provider"].astype("category")
         df['card_number'] = pd.to_numeric(df['card_number'],errors="coerce")
+        df.dropna(inplace=True,axis="index",how="any") # drops the whole row if any columns have an nan
+        df['card_number'] = df["card_number"].astype(str)
         df['expiry_date']=pd.to_datetime(df['expiry_date'],errors='coerce',format="%m/%y")
         df['date_payment_confirmed']=pd.to_datetime(df['date_payment_confirmed'],infer_datetime_format=True, errors='coerce') 
         df.drop_duplicates(subset=["card_number",	"expiry_date",	"card_provider"	],keep="first",inplace=True)
