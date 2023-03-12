@@ -99,3 +99,18 @@ class DataCleaning:
         df["weight"] = newWeights
 
         return df        
+
+    def clean_products_data(self, df: pd.DataFrame):
+        df = self.convert_product_weights(df=df)
+        df = df.drop(columns=["Unnamed: 0"])
+        df['product_price'] = df['product_price'].str.replace('£', '', regex=False)
+        df['product_price'] = pd.to_numeric(df['product_price'],errors="coerce")
+        df['date_added']=pd.to_datetime(df['date_added'],infer_datetime_format=True, errors='coerce')
+        df["removed"] = df["removed"].astype("category")
+        df["category"] = df["category"].astype("category")
+
+        df.drop_duplicates(subset=["product_name", "EAN"],keep="first",inplace=True)
+        df.dropna(inplace=True,axis="index",how="any") # drops the whole row if any columns have an nan
+
+        return df
+    
