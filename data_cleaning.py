@@ -114,3 +114,7 @@ class DataCleaning:
 
         return df
     
+    def clean_orders_data(selff, df: pd.DataFrame):
+        df = df.drop(columns=["level_0", "index", "date_uuid", "1",'first_name','last_name'])
+        df['store_code'] = df['store_code'].astype('category')
+        df['product_code'] = df['product_code'].astype('category')
