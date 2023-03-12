@@ -40,6 +40,7 @@ class DatabaseConnector:
         
     
         engine = sqlalchemy.create_engine(connectionString)
-        with engine.connect() as connection:
-            result = connection.execute(sqlalchemy.text("DROP TABLE IF EXISTS "+ table_name))
-            df.to_sql(table_name,connection,if_exists="replace",index=False)
+       # with engine.connect() as connection:
+            
+        created = df.to_sql(table_name,con=engine,if_exists="replace",index=False)
+       # print("Created %s lines." % created)
