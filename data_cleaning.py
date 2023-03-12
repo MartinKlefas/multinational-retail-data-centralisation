@@ -63,7 +63,7 @@ class DataCleaning:
     
     def convert_product_weights(self, df : pd.DataFrame):
         newWeights = list()
-        for thisValue in df["weight"]:
+        for thisValue in df["weight"]: # this is messy, but couldn't find a "select case" in pandas - need to look again
             if type(thisValue) == str:
                 try:
                     if " x " in thisValue: # some weight lines appear to be in the form of 6 x 10g or similar - interpreted to mean 6 lots of 10g
