@@ -1,5 +1,6 @@
 import pandas as pd
 from geopy.geocoders import Nominatim
+import numpy as np
 
 class DataCleaning:
     def clean_user_data(self, df: pd.DataFrame):
@@ -59,3 +60,42 @@ class DataCleaning:
         df["address"] = df["address"].str.replace('\W', ' ', regex=True) # remove the special chars from address
 
         return df
+    
+    def convert_product_weights(self, df : pd.DataFrame):
+        newWeights = list()
+        for thisValue in df["weight"]:
+            if type(thisValue) == str:
+                try:
+                    if " x " in thisValue: # some weight lines appear to be in the form of 6 x 10g or similar - interpreted to mean 6 lots of 10g
+                        splitWeight = thisValue.split(" x ")
+                        if splitWeight[1][-2:] == "kg":
+                            number = float(splitWeight[0])*float(splitWeight[1][:-2])
+                        elif splitWeight[1][-2:] == "ml":
+                            number = float(splitWeight[0])*float(splitWeight[1][:-2]) / 1000.0
+                        else:
+                            number = float(splitWeight[0])*float(splitWeight[1][:-1]) / 1000.0
+
+                        newWeights.append(number)
+
+                    else:
+                        if thisValue[-2:] == "kg":
+                            number = float(thisValue[:-2])
+                            newWeights.append(number) # don't multiply KG
+                        elif thisValue[-2:] == "ml":
+                            number = float(thisValue[:-2])
+                            newWeights.append(number / 1000.0)  # otherwise it's ml and needs dividing by 1000
+                        else:
+                            number = float(thisValue[:-1])
+                            newWeights.append(number / 1000.0)  # otherwise it's g and needs dividing by 1000
+                except Exception as ex:
+                    print(ex)
+                    newWeights.append(np.nan)
+            else:
+                newWeights.append(thisValue)
+    
+
+
+        
+        df["weight"] = newWeights
+
+        return df        
