@@ -79,8 +79,14 @@ class DataExtractor:
 
         return df
 
-    def extract_from_s3(self, link : str):
+    def extract_from_s3(self, bucket : str, file : str):
         s3 = boto3.client('s3')
 
-        s3.download_file("data-handling-public",'products.csv','products.csv')
-        return pd.read_csv("products.csv")
+        s3.download_file(bucket,file,file)
+        if "csv" in file.lower() :
+            return pd.read_csv(file)
+        elif "json" in file.lower():
+            return pd.read_json(file)
+        else:
+            raise TypeError("Only CSV and JSON files are currently implemented")
+
