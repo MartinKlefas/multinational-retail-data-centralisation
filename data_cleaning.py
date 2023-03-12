@@ -118,3 +118,14 @@ class DataCleaning:
         df = df.drop(columns=["level_0", "index", "date_uuid", "1",'first_name','last_name'])
         df['store_code'] = df['store_code'].astype('category')
         df['product_code'] = df['product_code'].astype('category')
+
+        return df
+    
+    def clean_date_times(self,df: pd.DataFrame):
+        df['dateTime'] = df["year"] + "-" + df["month"]  + "-" +  df["day"] + " " + df["timestamp"]
+        df = df.drop(columns=["timestamp","month","year","day","time_period"])
+        df['dateTime']=pd.to_datetime(df['dateTime'],infer_datetime_format=True, errors='coerce')
+        df.drop_duplicates(subset=["date_uuid"],keep="first",inplace=True)
+        df.dropna(inplace=True,axis="index",how="any") # drops the whole row if any columns have an nan
+
+        return df
