@@ -1,0 +1,90 @@
+Task 4:
+SELECT count(orders_table.date_uuid), DATE_PART('MONTH' , dim_date_times.date_time)
+
+FROM orders_table
+INNER JOIN dim_date_times on orders_table.date_uuid = dim_date_times.date_uuid
+
+GROUP BY DATE_PART('MONTH' , dim_date_times.date_time)
+
+ORDER BY count(orders_table.date_uuid) DESC
+
+
+Task 5:
+SELECT dim_store_details.store_type,
+sum(orders_table.product_quantity * dim_products.product_price) AS total_sales,
+
+sum(orders_table.product_quantity * dim_products.product_price) * 100 /
+sum(sum(orders_table.product_quantity * dim_products.product_price)) over () as percentage
+
+
+
+FROM orders_table
+
+INNER JOIN dim_products on orders_table.product_code = dim_products.product_code
+INNER JOIN dim_store_details on orders_table.store_code = dim_store_details.store_code
+
+GROUP BY dim_store_details.store_type
+
+ORDER BY sum(orders_table.product_quantity * dim_products.product_price) DESC
+
+
+
+Task 6:
+SELECT 
+sum(orders_table.product_quantity * dim_products.product_price) AS total_sales,
+DATE_PART('YEAR' , dim_date_times.date_time),
+DATE_PART('MONTH' , dim_date_times.date_time)
+
+
+
+FROM orders_table
+
+INNER JOIN dim_products on orders_table.product_code = dim_products.product_code
+INNER JOIN dim_date_times on orders_table.date_uuid = dim_date_times.date_uuid
+
+GROUP BY DATE_PART('YEAR' , dim_date_times.date_time),
+DATE_PART('MONTH' , dim_date_times.date_time)
+
+ORDER BY sum(orders_table.product_quantity * dim_products.product_price) DESC
+
+
+TASK 7:
+SELECT 
+sum(orders_table.product_quantity * dim_products.product_price) AS total_sales,
+dim_store_details.store_type,dim_store_details.country_code
+
+
+FROM orders_table
+
+
+INNER JOIN dim_products on orders_table.product_code = dim_products.product_code
+INNER JOIN dim_store_details on orders_table.store_code = dim_store_details.store_code
+
+WHERE dim_store_details.country_code = 'DE'
+
+GROUP BY dim_store_details.store_type, dim_store_details.country_code
+
+
+
+ORDER BY sum(orders_table.product_quantity * dim_products.product_price) DESC
+
+
+
+Task 8:
+select myYear,
+avg(gap_between_sales) as avg_gap
+
+from
+(
+select DATE_PART('YEAR' , dim_date_times.date_time) as myYear,
+lead(dim_date_times.date_time,1) over ( ORDER BY dim_date_times.date_time) 
+- dim_date_times.date_time gap_between_sales
+
+from orders_table
+
+INNER JOIN dim_date_times on orders_table.date_uuid = dim_date_times.date_uuid
+) mySubQuery
+
+group by myYear
+
+order by myYear DESC
