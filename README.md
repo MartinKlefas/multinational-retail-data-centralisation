@@ -1,5 +1,7 @@
 # Multinational Retail Data Centralisation
 
+The intention of this project is to centralise, clean up, and find "the ultimate truth" from a number of disparate and human-maintained databases scattered about a fictional company's server estate. The data contains errors and omissions, and is organised based on the designs of several different authors. The first stages are to gather all this information into a new master database, and to remove any errors during this process. The second phase is to then use SQL commands to query the data for basic answers. These SQL queries could be built into live reports, or simply a powerpoint to be sent to management - but this phase is not addressed.
+
 This is an example project from the AICore curriculum, intended to teach the basic concepts of data manipulation & give candidates a taste of Data Analytics. The project is composed of milestones to building the functional code, these will be described first, before the full functionality is outlined.
 
 # Milestones 1 & 2
